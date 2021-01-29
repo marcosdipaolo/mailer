@@ -1,0 +1,24 @@
+{
+    "name": "marcosdipaolo/mailer",
+    "description": "A PHP Mailer Package",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Marcos Di Paolo",
+            "email": "marcosdipaolo@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "swiftmailer/swiftmailer": "^6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MDP\\Mailer\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    }
+}
