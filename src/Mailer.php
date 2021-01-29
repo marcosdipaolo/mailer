@@ -27,7 +27,7 @@ class Mailer
      * @param int $priority
      * @return int
      */
-    public static function send(
+    public function send(
         string $subject,
         string $mailFrom,
         string $nameFrom,
