@@ -2,10 +2,11 @@
 
 namespace MDP\Mailer;
 
-use Swift_Mailer;
-use Swift_Message;
-use Swift_Mime_SimpleMessage;
-use Swift_SmtpTransport;
+
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mailer\Mailer as SymfonyMailer;
 
 class Mailer
 {
@@ -24,35 +25,31 @@ class Mailer
      * @param string $nameFrom
      * @param array $recipients
      * @param string $body
-     * @param int $priority
-     * @return int
+     * @throws TransportExceptionInterface
      */
     public function send(
         string $subject,
         string $mailFrom,
-        string $nameFrom,
         array $recipients,
         string $body,
-        int $priority = Swift_Mime_SimpleMessage::PRIORITY_NORMAL
-    ): int
+    ): void
     {
-        $transport = new Swift_SmtpTransport(
-            $_ENV['MAIL_HOST'],
-            $_ENV['MAIL_PORT']
-        );
-        $transport->setUsername($_ENV['MAIL_USERNAME'])
-            ->setPassword($_ENV['MAIL_PASSWORD'])
-            ->setEncryption($_ENV['MAIL_ENCRYPTION']);
+        $host = $_ENV["MAIL_HOST"];
+        $port = $_ENV["MAIL_PORT"];
+        $user = $_ENV['MAIL_USERNAME'];
+        $pass = $_ENV['MAIL_PASSWORD'];
+        $transport = Transport::fromDsn("smtp://{$user}:{$pass}@{$host}:{$port}");
 
-        $mailer = new Swift_Mailer($transport);
+        $mailer = new SymfonyMailer($transport);
 
-        $message = (new Swift_Message($subject, $body))
-            ->setFrom([$mailFrom => $nameFrom])
-            ->setTo($recipients);
+        $message = (new Email)
+            ->subject($subject)
+            ->from($mailFrom)
+            ->to(...$recipients)
+            ->html($body);
 
-        $message->setPriority($priority);
 
-        return $mailer->send($message);
+        $mailer->send($message);
     }
 
     /**
